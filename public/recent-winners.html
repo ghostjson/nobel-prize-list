@@ -1,0 +1,179 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nobel Prize - Upload</title>
+    <link rel="stylesheet" href="assets/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/style.css">
+  </head>
+  <body>
+    <div class="row">
+      <div class="col">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <button
+                class="navbar-toggler"
+                type="button"
+                data-toggle="collapse"
+                data-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+              >
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                  <li class="nav-item active">
+                    <a class="nav-link" href="/" >Upload</span></a
+                    >
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/recent-winners">2020-2019 Winners</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/all-prize-winners">All Prize Winners</a>
+                  </li>
+                 
+                </ul>
+              </div>
+        </nav>
+        </div>
+      </div>
+    <div id="app">
+      <div class="page">
+        <div class="row">
+          <div class="col">
+            <div class="container">
+              <div class="card mt-5">
+                <div class="card-header">
+                  Load
+                </div>
+                <div class="card-body">
+                  <form class="form-inline">
+                    <div class="form-group">
+                      <label for="filename">Enter filename</label>
+                      <input type="text" v-model="load_recent_filename" id="filename" class="form-control" placeholder="prize.yaml or prize.json">
+                    </div>
+                    <div class="form-group">
+                      <button class="btn btn-dark mt-2" @click="loadRecent">Load</button>
+                    </div>
+                  </form>
+                  
+                </div>
+              </div>
+              <div class="card mt-5" v-if="save_as_dialogue">
+                <div class="card-header">
+                  Save As
+                </div>
+                <div class="card-body">
+                  <form>
+                    <div class="form-group">
+                      <label for="filename">Enter filename</label>
+                      <input type="text" v-model="save_filename" id="filename" class="form-control" placeholder="prizes.yaml">
+                    </div>
+                    <div class="form-group">
+                      <button @click="saveAsYAML" class="btn btn-dark mt-2">Save</button>
+                    </div>
+                  </form>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+       <div class="row" v-if="prize_list.length > 0">
+            <div class="col">
+              <div class="container">
+                <div class="card mt-5 mb-5">
+                  <div class="card-header">
+                    2020-2019 Winners
+                  </div>
+                  <div class="card-body">
+                    <table class="table">
+                      <thead class="thead-dark">
+                        <tr>
+                          <th scope="col">Year</th>
+                          <th scope="col">Category</th>
+                          <th scope="col">Laureates</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(prize, index) in prize_list.filter(prize => prize.year === '2020' || prize.year === '2019')" :key="index">
+                          <th scope="row">{{ prize.year }}</th>
+                          <td>{{ prize.category }}</td>
+                          <td>{{ prize.name }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+
+    <script src="assets/bootstrap.js"></script>
+    <script src="assets/vue.js"></script>
+
+    <script>
+      const app = new Vue({
+        el: "#app",
+        data: {
+          prize_list: [],
+          load_recent_filename: '',
+          save_filename: '',
+          save_as_dialogue: false,
+        },
+        methods: {
+          async loadRecent(e){ e.preventDefault();
+          
+            try{
+              const response = await fetch('/api/read-file/'+ this.load_recent_filename)
+              const data = await response.json()
+
+              if(this.load_recent_filename.endsWith('.json')){
+                this.save_as_dialogue = true
+              }
+
+              this.processData(data.content.prizes)
+
+            }catch(e){
+              console.log(e);
+              console.log("Incorrect file name");
+            }
+            
+
+          },
+          async saveAsYAML(e){
+            e.preventDefault()
+            const response = await fetch(`/api/save/yaml/${this.save_filename}/${this.load_recent_filename}`)
+
+            const data = await response.json()
+          },
+          processData(prize_list){
+            prize_list.forEach(prize => {
+              prize.laureates.forEach(laureate => {
+                this.prize_list.push({
+                  category: prize.category,
+                  year: prize.year,
+                  firstname: laureate.firstname,
+                  surname: laureate.surname,
+                  motivation: laureate.motivation,
+                  share: laureate.share,
+                  id: laureate.id,
+                  name: laureate.firstname + ' ' + laureate.surname
+                })
+              })
+
+            })
+
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

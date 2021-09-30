@@ -15,40 +15,18 @@ import (
 )
 
 // route /
-func IndexHandler(c *gin.Context) {
+func uploadPageHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.html", gin.H{})
 }
 
-// route api/test/
-func testHandler(c *gin.Context)  {
+// route /all-prize-winners/
+func allPrizeWinnersPageHandler(c *gin.Context){
+	c.HTML(http.StatusOK, "all-prize-winners.html", gin.H{})
+}
 
-		type Test struct {
-			Name string `yaml:"name"`
-		}
-
-		var test = Test{Name: "Hello"}
-		testString, err := yaml.Marshal(&test)
-		if err != nil{
-			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "Error",
-			})
-		}
-
-		file, err2 := os.Create("data.yaml")
-		if err2 != nil {
-			log.Fatal(err)
-		}
-
-		defer file.Close()
-
-		_, err3 := file.WriteString(string(testString))
-		if err3 != nil {
-			log.Fatal(err3)
-		}
-
-		c.JSON(http.StatusOK, gin.H{
-			"message": string(testString),
-		})
+// route /recent-winners/
+func recentWinnersPageHandler(c *gin.Context){
+	c.HTML(http.StatusOK, "recent-winners.html", gin.H{})
 }
 
 // route api/upload

@@ -32,12 +32,15 @@ func main(){
 
 	router := gin.Default()
 	router.Static("/assets", "./public")
+	router.Static("/images", "./public/images")
 	router.Delims("{{{","}}}")
 	router.LoadHTMLGlob("public/*.html")
 
-	router.GET("/", IndexHandler)
+	router.GET("/", uploadPageHandler)
+	router.GET("/all-prize-winners", allPrizeWinnersPageHandler)
+	router.GET("/recent-winners", recentWinnersPageHandler)
 
-	router.GET("api/test", testHandler)
+	// router.GET("api/test", testHandler)
 
 	router.POST("api/upload", uploadHandler)
 
