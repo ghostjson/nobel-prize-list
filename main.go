@@ -32,7 +32,7 @@ func main(){
 
 	router := gin.Default()
 	router.Static("/assets", "./public")
-	router.Delims("||","||")
+	router.Delims("{{{","}}}")
 	router.LoadHTMLGlob("public/*.html")
 
 	router.GET("/", IndexHandler)
@@ -41,7 +41,9 @@ func main(){
 
 	router.POST("api/upload", uploadHandler)
 
-	// router.GET("api/parse", parseHandler)
+	router.GET("api/read-file/:filename", readFileHandler)
+
+	router.GET("api/save/yaml/:filename/:json_filename", saveAsYAMLHandler)
 
 	if err := router.Run(":5000"); err != nil{
 		log.Fatal(err.Error())
