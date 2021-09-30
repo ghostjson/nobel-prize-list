@@ -12,6 +12,7 @@
   <body>
     <div class="row">
       <div class="col">
+        <!-- Navigation -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
               <button
                 class="navbar-toggler"
@@ -39,9 +40,11 @@
                  
                 </ul>
               </div>
-            </nav>
-          </div>
-        </div>
+        </nav>
+        <!-- Navigation Ends -->
+      </div>
+    </div>
+    <!-- App starts -->
     <div id="app">
 
       <div class="page">
@@ -56,7 +59,7 @@
                   <form>
                     <div class="form-group">
                       <label for="filename">Enter filename</label>
-                      <input type="text" v-model="filename" id="filename" class="form-control" placeholder="prizes.yaml">
+                      <input type="text" v-model="filename" id="filename" class="form-control" placeholder="prize.yaml">
                     </div>
                     <div class="form-group">
                       <button @click="loadFile" class="btn btn-dark mt-2">Load</button>
@@ -122,7 +125,7 @@
         </div>
       </div>
     </div>
-
+    <!-- App Ends -->
 
     <script src="assets/jquery-3.6.0.min.js"></script>
     <script src="assets/jquery.dataTables.min.js"></script>
