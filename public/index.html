@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nobel Prize - Upload</title>
+    <link rel="stylesheet" href="assets/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/style.css">
+  </head>
+  <body>
+    <div id="app">
+        <div class="row">
+          <div class="col">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+              <button
+                class="navbar-toggler"
+                type="button"
+                data-toggle="collapse"
+                data-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+              >
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                  <li class="nav-item active">
+                    <a class="nav-link" href="#" @click="current_page = 'upload'">Upload</span></a
+                    >
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#" @click="current_page = 'view'">View</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">Pricing</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link disabled" href="#">Disabled</a>
+                  </li>
+                </ul>
+              </div>
+            </nav>
+          </div>
+        </div>
+      <div class="page" v-if="current_page === 'upload'">
+        <div class="container">
+          <div class="row">
+            <div class="col">
+              <div class="card mt-5">
+                <div class="card-header">Upload</div>
+                <div class="card-body">
+                  <form>
+                    <div class="form-group">
+                      <label for="upload">Upload the json file</label>
+                      <input type="file" class="form-control" id="upload">
+                    </div>
+                    <div class="form-group">
+                      <button @click="upload" class="btn btn-dark mt-2">Upload</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row" v-if="prize_list.length > 0">
+            <div class="col">
+              <div class="card mt-5 mb-5">
+                <div class="card-header">
+                  Preview
+                </div>
+                <div class="card-body">
+                  <table class="table">
+                    <thead class="thead-dark">
+                      <tr>
+                        <th scope="col">Year</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Laureates</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(prize, index) in prize_list.slice(0, 10)" :key="index">
+                        <th scope="row">{{ prize.year }}</th>
+                        <td>{{ prize.category }}</td>
+                        <td>{{ prize.name }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="page" v-if="current_page === 'view'">
+        <h2>Hello view</h2>
+      </div>
+    </div>
+
+    <script src="assets/bootstrap.js"></script>
+    <script src="assets/vue.js"></script>
+
+    <script>
+      const app = new Vue({
+        el: "#app",
+        data: {
+          current_page: 'upload',
+          prize_list: []
+        },
+        methods: {
+          async upload(){
+            const upload = document.getElementById('upload').files[0]
+            if(upload !== undefined && upload !== null){
+              const formData = new FormData()
+
+              formData.append("file", upload)
+              const response = await fetch('/api/upload', {method: 'POST', body: formData})
+              const data = await response.json()
+              // this.prize_list = data.content.prizes
+
+              this.processData(data.content.prizes)
+            }
+          },
+          processData(prize_list){
+            prize_list.forEach(prize => {
+              prize.laureates.forEach(laureate => {
+                this.prize_list.push({
+                  category: prize.category,
+                  year: prize.year,
+                  firstname: laureate.firstname,
+                  surname: laureate.surname,
+                  motivation: laureate.motivation,
+                  share: laureate.share,
+                  id: laureate.id,
+                  name: laureate.firstname + ' ' + laureate.surname
+                })
+              })
+
+              console.log(this.prize_list);
+            })
+
+            console.log(this.prize_list);
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
