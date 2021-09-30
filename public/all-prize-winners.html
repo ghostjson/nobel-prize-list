@@ -163,7 +163,9 @@
                 this.error = 'Incorrect file name'
               }
             }else{
-              this.error = 'Filename should not be empty'
+              if(!this.load_recent_filename.endsWith(".json")){
+                  this.error = 'Incorrect file name';
+                }
             }
             
             
