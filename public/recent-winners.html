@@ -56,6 +56,9 @@
                 </div>
                 <div class="card-body">
                   <form class="form-inline">
+                    <div class="alert alert-danger" role="alert" v-if="error != ''">
+                      {{ error }}
+                    </div>
                     <div class="form-group">
                       <label for="filename">Enter filename</label>
                       <input type="text" v-model="load_recent_filename" id="filename" class="form-control" placeholder="prize.yaml or prize.json">
@@ -73,6 +76,7 @@
                 </div>
                 <div class="card-body">
                   <form>
+
                     <div class="form-group">
                       <label for="filename">Enter filename</label>
                       <input type="text" v-model="save_filename" id="filename" class="form-control" placeholder="prizes.yaml">
@@ -130,25 +134,30 @@
           load_recent_filename: '',
           save_filename: '',
           save_as_dialogue: false,
+          error: ''
         },
         methods: {
           async loadRecent(e){ e.preventDefault();
           
-            try{
-              const response = await fetch('/api/read-file/'+ this.load_recent_filename)
-              const data = await response.json()
+            if(this.load_recent_filename != ''){
+              try{
+                const response = await fetch('/api/read-file/'+ this.load_recent_filename)
+                const data = await response.json()
 
-              if(this.load_recent_filename.endsWith('.json')){
-                this.save_as_dialogue = true
+                if(this.load_recent_filename.endsWith('.json')){
+                  this.save_as_dialogue = true
+                }
+
+                this.processData(data.content.prizes)
+
+              }catch(e){
+                console.log(e);
+                console.log("Incorrect file name");
+                this.error = 'Incorrect file name';
               }
-
-              this.processData(data.content.prizes)
-
-            }catch(e){
-              console.log(e);
-              console.log("Incorrect file name");
+            }else{
+              this.error = 'Input field should not be empty'
             }
-            
 
           },
           async saveAsYAML(e){

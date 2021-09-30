@@ -58,6 +58,9 @@
                 <div class="card-body">
                   <form>
                     <div class="form-group">
+                      <div class="alert alert-danger" role="alert" v-if="error != ''">
+                        {{ error }}
+                      </div>
                       <label for="filename">Enter filename</label>
                       <input type="text" v-model="filename" id="filename" class="form-control" placeholder="prize.yaml">
                     </div>
@@ -143,17 +146,27 @@
           years: new Set(),
           current_year: '',
           current_category: '',
-
+          error: ''
         },
         methods: {
 
           async loadFile(e){
             e.preventDefault();
-            
-            const response = await fetch('/api/read-file/'+ this.filename)
-            const data = await response.json()
+            if(this.filename !== ''){
+              try{
+                const response = await fetch('/api/read-file/'+ this.filename)
+                const data = await response.json()
 
-            this.processData(data.content.prizes)
+                this.processData(data.content.prizes)
+              }catch(e){
+                console.log(e);
+                this.error = 'Incorrect file name'
+              }
+            }else{
+              this.error = 'Filename should not be empty'
+            }
+            
+            
 
             $(document).ready(function(){
               $('#table').DataTable({

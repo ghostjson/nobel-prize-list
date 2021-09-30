@@ -51,12 +51,16 @@
           <div class="row">
             <div class="col">
               <div class="card mt-5">
+
                 <div class="card-header">Upload</div>
                 <div class="card-body">
+                <div class="alert alert-danger" role="alert" v-if="error != ''">
+                  {{ error }}
+                </div> 
                   <form>
                     <div class="form-group">
                       <label for="upload">Upload the json file</label>
-                      <input type="file" class="form-control" id="upload">
+                      <input type="file" class="form-control" accept=".json" id="upload">
                     </div>
                     <div class="form-group">
                       <button @click="upload" class="btn btn-dark mt-2">Upload</button>
@@ -108,7 +112,8 @@
         data: {
           prize_list: [],
           load_recent_filename: '',
-          save_filename: ''
+          save_filename: '',
+          error: ''
         },
         methods: {
           async upload(e){
@@ -121,9 +126,10 @@
               formData.append("file", upload)
               const response = await fetch('/api/upload', {method: 'POST', body: formData})
               const data = await response.json()
-              // this.prize_list = data.content.prizes
 
               this.processData(data.content.prizes)
+            }else{
+              this.error = 'Input file should not be empty'
             }
           },
           processData(prize_list){
